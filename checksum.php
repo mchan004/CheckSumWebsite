@@ -78,7 +78,7 @@ function myScanDir($dir, $level, $rootLen)
 					$PrepareInsert = $PrepareInsert. "('$fileName','$md5file'),";
 					
 					$i++;
-					if ($i == 200)
+					if ($i == 500)
 					{
 						InsertDB(substr($PrepareInsert,0,-1));
 						$PrepareInsert = "INSERT INTO md5_file (file,md5) VALUES ";
