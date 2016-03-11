@@ -1,17 +1,15 @@
 <?php
-//Created by Thạnh Tú
-//Project CheckSumWebsite https://github.com/mchan004/
 $DBH = new PDO("sqlite:checksum.db");
 $DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$PrepareInsert = "INSERT INTO md5_file (file,md5) VALUES ";
 if (isset($_POST['Wfile']))
 {
 	$sql = "DELETE FROM md5_file";
 	$STH = $DBH->prepare($sql);
 	$STH->execute();
 }
-function InsertDB($file,$md5) {
+function InsertDB($sql) {
 	global $DBH;
-	$sql = "INSERT INTO md5_file (file,md5) VALUES ('$file','$md5')";
 	$STH = $DBH->prepare($sql);
 	$STH->execute();
 }
@@ -37,8 +35,9 @@ function prePad($level)
 
 function myScanDir($dir, $level, $rootLen)
 {
+	global $PrepareInsert;
 	global $pathLen;
-	global $fp;
+	global $i;
 	if ($handle = opendir($dir)) {
 		$allFiles = array();
 		while (false !== ($entry = readdir($handle))) {
@@ -64,6 +63,7 @@ function myScanDir($dir, $level, $rootLen)
 				echo prePad($level) . $linkName . "<br>\n";
 				myScanDir($fileName, $level + 1, strlen($fileName));
 			} else {
+				
 				if ($displayName=="checksum.db") continue;
 				$md5file = md5_file($fileName);
 				echo prePad($level) . "<a href=\"" . $linkName . "\" style=\"text-decoration:none;\">" . $displayName . "</a> Sum: ".$md5file;
@@ -74,7 +74,18 @@ function myScanDir($dir, $level, $rootLen)
 						echo " <b><font color='red'>This file has been changed has change: $old_MD5</font></b>";
 				
 				if (isset($_POST['Wfile']))
-					InsertDB($fileName,$md5file);
+				{
+					$PrepareInsert = $PrepareInsert. "('$fileName','$md5file'),";
+					
+					$i++;
+					if ($i == 200)
+					{
+						InsertDB(substr($PrepareInsert,0,-1));
+						$PrepareInsert = "INSERT INTO md5_file (file,md5) VALUES ";
+						$i=1;
+					}
+				}
+				
 				echo "<br>";
 			}
 		}
@@ -100,6 +111,8 @@ function myScanDir($dir, $level, $rootLen)
 		$root = getcwd();
 		$pathLen = strlen($root);
 		myScanDir($root, 0, strlen($root));
+		if (isset($_POST['Wfile']))
+			InsertDB(substr($PrepareInsert,0,-1));
 		?>
 	</p>
 </body>
