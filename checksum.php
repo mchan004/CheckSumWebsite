@@ -102,7 +102,7 @@ function myScanDir($dir, $level, $rootLen)
 <body>
 	<h1>Site Map</h1>
 	<form method="post" action="">
-		Save this MD5-file to database.
+		Renew this MD5-files to database.
 			<input type="submit" name="Wfile" value="Save">
 	</form>
 	<p style="font-family:'Courier New', Courier, monospace; font-size:small;">
