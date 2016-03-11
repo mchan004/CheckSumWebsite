@@ -1,4 +1,6 @@
 <?php
+//Created by Thạnh Tú
+//Project CheckSumWebsite https://github.com/mchan004/
 $DBH = new PDO("sqlite:checksum.db");
 $DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 if (isset($_POST['Wfile']))
